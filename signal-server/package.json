@@ -1,0 +1,13 @@
+{
+  "name": "@chime6/signal-server",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "deno run --allow-net index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
