@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, model, computed } from '@angular/co
 import {MatButtonModule} from '@angular/material/button'
 import {MatInputModule} from '@angular/material/input'
 import {MatFormFieldModule} from '@angular/material/form-field'
-import {MatChipsModule} from '@angular/material/chips';
+import {MatChipsModule} from '@angular/material/chips'
 import {MatSelectModule} from '@angular/material/select'
 import { uid } from 'radashi'
 

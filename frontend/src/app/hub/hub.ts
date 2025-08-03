@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { Component, ChangeDetectionStrategy, resource } from '@angular/core'
 import {MatButtonModule} from '@angular/material/button'
 import {MatInputModule} from '@angular/material/input'
 import {MatFormFieldModule} from '@angular/material/form-field'
@@ -12,5 +12,7 @@ import {MatSelectModule} from '@angular/material/select'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Hub {
-
+  rooms = resource({
+    loader: () => fetch('http://localhost:3000/api/rooms').then(response => response.json())
+  })
 }

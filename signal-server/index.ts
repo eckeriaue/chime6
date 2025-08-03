@@ -1,17 +1,5 @@
-import { Server } from "https://deno.land/x/socket_io@0.2.0/mod.ts"
-import { Application, Router } from "@oak/oak"
-
-const app = new Application()
-const router = new Router()
-const rooms = new Map()
-
-router.get('rooms', context => {
-  return rooms.values().toArray()
-})
-
-app.use(router.routes())
-app.use(router.allowedMethods())
-
+import { serve } from "https://deno.land/std@0.150.0/http/server.ts"
+import { Server } from "https://deno.land/x/socket_io@0.1.1/mod.ts"
 
 const io = new Server()
 
@@ -25,11 +13,7 @@ io.on("connection", (socket) => {
   })
 })
 
-const handler = io.handler(async (req) => {
-  return await app.handle(req) || new Response(null, { status: 404 })
-})
-
-Deno.serve({
-  handler,
+await serve(io.handler(), {
   port: 3000,
+  hostname: 'localhost'
 })
