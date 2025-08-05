@@ -17,7 +17,7 @@ func main() {
 		w.Write([]byte("Hello, World!"))
 	})
 
-	log.Println("server was startet on http://localhost:8080")
+	log.Println("server was started on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
