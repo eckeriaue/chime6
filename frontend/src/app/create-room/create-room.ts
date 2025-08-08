@@ -40,7 +40,7 @@ export class CreateRoom {
   public submit() {
     if (this.createRoomForm.valid) {
       const { userName, roomName, uid } = this.createRoomForm.value
-      this.apiService.createRoom({ users: [{ name: userName }], roomName, uid }).subscribe(console.info)
+      this.apiService.createRoom({ users: [{ name: userName, role: 'owner' }], roomName, uid }).subscribe(console.info)
     }
   }
 }
