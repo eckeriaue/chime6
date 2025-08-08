@@ -2,23 +2,22 @@ package main
 
 import (
 	"log"
-	"net/http"
-
-	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
+	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
+	"os"
 )
-
 
 func main() {
 	loadEnv()
+	app := fiber.New()
 
-	router := chi.NewRouter()
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, World!"))
+	app.Get("/", func (c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
 	})
 
-	log.Println("server was started on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(app.Listen(":" + os.Getenv("BACKEND_PORT")))
+
 }
 
 
@@ -27,4 +26,12 @@ func loadEnv() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+}
+
+
+func getRedis() *redis.Client {
+	return redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_HOST"),
+		Password: os.Getenv("REDIS_PASSWORD"),
+	})
 }
