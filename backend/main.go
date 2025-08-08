@@ -15,6 +15,7 @@ import (
 
 type User struct {
 	Name string `json:"name"`
+	Role string `json:"role"` // "owner", "guest"
 }
 
 type Room struct {
