@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	// "time"
+	"context"
 	"github.com/joho/godotenv"
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
@@ -9,9 +11,24 @@ import (
 	"os"
 )
 
-// var ctx = context.Background()
+type User struct {
+	Name string `json:"name"`
+}
+
+type Room struct {
+	RoomName string `json:"name"`
+	Uid string `json:"uid"`
+	Users []User `json:"users"`
+}
+
+type CreateRoomRequest struct {
+    Body Room  `json:"body"`
+}
+
+var ctx = context.Background()
 
 func main() {
+
 	loadEnv()
 	app := fiber.New()
 	// redis := getRedis()
@@ -22,13 +39,20 @@ func main() {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowHeaders: "*",
+		AllowMethods: "*",
 	}))
 	api := app.Group("/api/v1")
 
 	roomsApi := api.Group("/rooms")
-	roomsApi.Get("/create", func(c *fiber.Ctx) error {
-		// redis.Set(ctx, "key", "value", 0)
-		log.Println(string(c.Body()))
+	roomsApi.Post("/create", func(c *fiber.Ctx) error {
+		var data CreateRoomRequest
+
+		if err := c.BodyParser(&data); err != nil {
+			log.Fatal(err)
+		}
+
+		log.Println(data.Body)
+
 		return c.JSON(map[string]any {
 			"message": "Room created successfully",
 			"room_id": "1234567890",
@@ -47,10 +71,10 @@ func loadEnv() {
 	}
 }
 
-
 func getRedis() *redis.Client {
 	return redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_HOST"),
+		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
 		Password: os.Getenv("REDIS_PASSWORD"),
+		DB:       0,
 	})
 }

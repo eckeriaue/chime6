@@ -1,22 +1,24 @@
 <div class="size-full bg-(--mat-sys-background) flex items-center px-4">
   <div class="w-[640px] m-auto">
-    <form class="flex flex-col gap-y-4">
+    <form [formGroup]="createRoomForm" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
 
       <mat-chip-set aria-label="Fish selection">
-        <mat-chip>ID комнаты: {{ uid }}</mat-chip>
+        <mat-chip>ID комнаты: {{ createRoomForm.value.uid }}</mat-chip>
       </mat-chip-set>
 
       <mat-form-field>
-        <mat-label>Введите ваше имя</mat-label>
-        <input matInput [value]="userName()" (input)="userName.set($event.target!.value)">
+        <mat-label>Введите ваше имя </mat-label>
+        <input matInput formControlName="userName">
       </mat-form-field>
 
       <mat-form-field>
-        <mat-label>Введите название комнаты</mat-label>
-        <input matInput [value]="roomName()" (input)="roomName.set($event.target!.value)">
+        <mat-label>Введите название комнаты </mat-label>
+        <input matInput formControlName="roomName">
       </mat-form-field>
 
-      <button type="submit" [disabled]="disabled()" matButton="filled">Создать</button>
+      <button type="submit" [disabled]="!createRoomForm.valid" matButton="filled">
+        Создать
+      </button>
     </form>
   </div>
 
