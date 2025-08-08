@@ -2,13 +2,15 @@ package main
 
 import (
 	"log"
-	// "time"
+	"time"
 	"context"
-	"github.com/joho/godotenv"
-	"github.com/gofiber/fiber/v2"
-	"github.com/redis/go-redis/v9"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"os"
+	"encoding/json"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
 )
 
 type User struct {
@@ -16,13 +18,9 @@ type User struct {
 }
 
 type Room struct {
-	RoomName string `json:"name"`
+	RoomName string `json:"roomName"`
 	Uid string `json:"uid"`
 	Users []User `json:"users"`
-}
-
-type CreateRoomRequest struct {
-    Body Room  `json:"body"`
 }
 
 var ctx = context.Background()
@@ -31,7 +29,7 @@ func main() {
 
 	loadEnv()
 	app := fiber.New()
-	// redis := getRedis()
+	redis := getRedis()
 
 	app.Get("/", func (c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
@@ -45,13 +43,19 @@ func main() {
 
 	roomsApi := api.Group("/rooms")
 	roomsApi.Post("/create", func(c *fiber.Ctx) error {
-		var data CreateRoomRequest
+		var data struct {
+			Body Room `json:"body"`
+		}
 
 		if err := c.BodyParser(&data); err != nil {
 			log.Fatal(err)
 		}
 
-		log.Println(data.Body)
+		parsed, err := json.Marshal(data.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		redis.Set(ctx, data.Body.Uid, parsed, 59 * time.Minute).Result()
 
 		return c.JSON(map[string]any {
 			"message": "Room created successfully",
