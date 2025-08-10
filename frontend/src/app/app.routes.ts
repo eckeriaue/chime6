@@ -9,5 +9,9 @@ export const routes: Routes = [
   {
     path: 'rooms/create',
     loadComponent: () => import('./create-room/create-room').then(m => m.CreateRoom)
+  },
+  {
+    path: 'rooms/:id',
+    loadComponent: () => import('./room/room').then(m => m.Room)
   }
 ]

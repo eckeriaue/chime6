@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
-	"time"
 	"context"
-	"os"
 	"encoding/json"
+	"log"
+	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -33,7 +33,7 @@ func main() {
 	redis := getRedis()
 
 	app.Get("/", func (c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
+		return c.SendString("ok")
 	})
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
@@ -43,7 +43,7 @@ func main() {
 	api := app.Group("/api/v1")
 
 	roomsApi := api.Group("/rooms")
-	roomsApi.Post("/create", func(c *fiber.Ctx) error {
+	roomsApi.Post("/", func(c *fiber.Ctx) error {
 		var data struct {
 			Body Room `json:"body"`
 		}
@@ -56,11 +56,18 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		redis.Set(ctx, data.Body.Uid, parsed, 59 * time.Minute).Result()
+		result, err := redis.Set(ctx, data.Body.Uid, parsed, 59 * time.Minute).Result()
+		if err != nil {
+			log.Fatal(err)
+		} else if result == "OK" {
+			log.Println("Комната создана успешно")
+			c.Redirect("/rooms/" + data.Body.Uid, 201)
+		}
 
 		return c.JSON(map[string]any {
-			"message": "Room created successfully",
-			"room_id": "1234567890",
+			"message": "Комната создана успешно",
+			"room_id": data.Body.Uid,
+			"url": "/rooms/" + data.Body.Uid,
 		})
 	})
 

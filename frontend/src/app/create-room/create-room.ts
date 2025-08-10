@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, model, computed } from '@angular/core'
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {MatButtonModule} from '@angular/material/button'
 import {MatInputModule} from '@angular/material/input'
 import {MatFormFieldModule} from '@angular/material/form-field'
@@ -7,6 +8,8 @@ import {MatSelectModule} from '@angular/material/select'
 import { uid } from 'radashi'
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms'
 import { ApiService } from '../api/api'
+import { Router } from '@angular/router'
+import { filter, first } from 'rxjs/operators'
 
 @Component({
   selector: 'app-create-room',
@@ -18,6 +21,8 @@ import { ApiService } from '../api/api'
 export class CreateRoom {
 
   constructor(private apiService: ApiService) {}
+
+  router = inject(Router)
 
   createRoomForm = new FormGroup({
     userName: new FormControl('', [
@@ -40,7 +45,17 @@ export class CreateRoom {
   public submit() {
     if (this.createRoomForm.valid) {
       const { userName, roomName, uid } = this.createRoomForm.value
-      this.apiService.createRoom({ users: [{ name: userName, role: 'owner' }], roomName, uid }).subscribe(console.info)
+      this.apiService.createRoom({
+        users: [{ name: userName, role: 'owner' }],
+        roomName,
+        uid
+      }).pipe(
+        filter(res => 'url' in res),
+        takeUntilDestroyed(),
+        first(),
+      ).subscribe(res => {
+        this.router.navigate([res.url])
+      })
     }
   }
 }
