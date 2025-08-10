@@ -66,6 +66,22 @@ func main() {
 				"url": "/rooms/" + room.Uid,
 			})
 		}
+		return c.Status(400).JSON(fiber.Map{ "error": "Failed to create room" })
+	})
+
+	roomsApi.Get("/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		if id == "" {
+			return c.Status(400).JSON(fiber.Map{"error": "Invalid room ID"})
+		}
+
+		if room, err := redis.Get(ctx, id).Result(); err != nil {
+			log.Printf("Redis get failed: %s", id)
+			return c.Status(400).JSON(fiber.Map{ "error": "Failed to get room" })
+		} else {
+			return c.JSON(room)
+		}
+
 	})
 
 	log.Fatal(app.Listen(":" + os.Getenv("BACKEND_PORT")))

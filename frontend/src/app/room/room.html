@@ -1,1 +1,7 @@
-<p>room works!</p>
+
+
+<ul>
+  @for (user of users(); track user.name) {
+    <li>{{user.name}}</li>
+  }
+</ul>

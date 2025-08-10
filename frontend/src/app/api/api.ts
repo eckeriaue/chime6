@@ -14,12 +14,12 @@ export class ApiService {
     return this.http.post(this.roomsApi.toString(), options)
   }
 
-  getRoom(id: string) {
-    return this.http.get(`${this.roomsApi}/${id}`, {
-      responseType: 'json',
+  getRoom(id: string): Promise<
+    {"roomName": string,"uid": string,"users": {name: string, role: string}[] }> {
+    return fetch(`${this.roomsApi}${id}`, {
       headers: {
         'Content-Type': 'application/json'
       }
-    })
+    }).then(r => r.json()).then(JSON.parse)
   }
 }
