@@ -9,5 +9,8 @@
   "scripts": {
     "dev": "deno run --allow-net index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1"
   }
 }
