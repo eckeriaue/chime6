@@ -44,31 +44,28 @@ func main() {
 
 	roomsApi := api.Group("/rooms")
 	roomsApi.Post("/", func(c *fiber.Ctx) error {
-		var data struct {
-			Body Room `json:"body"`
+		var room Room
+
+		if err := c.BodyParser(&room); err != nil {
+			log.Printf("Parse error: %v", err)
+			return c.Status(400).JSON(fiber.Map{"error": "Invalid JSON"})
 		}
 
-		if err := c.BodyParser(&data); err != nil {
-			log.Fatal(err)
+		parsed, err := json.Marshal(room)
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "Failed to marshal room"})
 		}
 
-		parsed, err := json.Marshal(data.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-		result, err := redis.Set(ctx, data.Body.Uid, parsed, 59 * time.Minute).Result()
-		if err != nil {
-			log.Fatal(err)
+		if result, err := redis.Set(ctx, room.Uid, parsed, 59 * time.Minute).Result(); err != nil {
+			log.Printf("Redis save failed: %s", room.Uid)
+			return c.Status(400).JSON(fiber.Map{ "error": "Failed to create room" })
 		} else if result == "OK" {
-			log.Println("Комната создана успешно")
-			c.Redirect("/rooms/" + data.Body.Uid, 201)
+			c.Redirect("/rooms/" + room.Uid, 201)
+			return c.JSON(fiber.Map {
+				"room_id": room.Uid,
+				"url": "/rooms/" + room.Uid,
+			})
 		}
-
-		return c.JSON(map[string]any {
-			"message": "Комната создана успешно",
-			"room_id": data.Body.Uid,
-			"url": "/rooms/" + data.Body.Uid,
-		})
 	})
 
 	log.Fatal(app.Listen(":" + os.Getenv("BACKEND_PORT")))
@@ -84,9 +81,14 @@ func loadEnv() {
 }
 
 func getRedis() *redis.Client {
-	return redis.NewClient(&redis.Options{
+	var client * redis.Client = redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,
 	})
+
+	if _, err := client.Ping(ctx).Result(); err != nil {
+        log.Fatalf("Redis connection failed: %v", err)
+    }
+    return client
 }

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
+import { Component, ChangeDetectionStrategy, runInInjectionContext, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {MatButtonModule} from '@angular/material/button'
 import {MatInputModule} from '@angular/material/input'
@@ -51,7 +51,6 @@ export class CreateRoom {
         uid
       }).pipe(
         filter(res => 'url' in res),
-        takeUntilDestroyed(),
         first(),
       ).subscribe(res => {
         this.router.navigate([res.url])

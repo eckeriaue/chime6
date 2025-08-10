@@ -9,12 +9,14 @@ export class ApiService {
 
   private http = inject(HttpClient)
   private apiUrl = new URL(`http://${env('BACKEND_HOST')}:${env('BACKEND_PORT')}`)
-  private createRoomApiUrl = new URL('/api/v1/rooms/', this.apiUrl.toString())
+  private roomsApi = new URL('/api/v1/rooms/', this.apiUrl.toString())
   createRoom(options: any) {
-    return this.http.post(this.createRoomApiUrl.toString(), {
-      body: options,
+    return this.http.post(this.roomsApi.toString(), options)
+  }
+
+  getRoom(id: string) {
+    return this.http.get(`${this.roomsApi}/${id}`, {
       responseType: 'json',
-      redirect: 'follow',
       headers: {
         'Content-Type': 'application/json'
       }
