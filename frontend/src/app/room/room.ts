@@ -33,8 +33,8 @@ export class Room {
   })
 
   public async copyInviteLink() {
-    const inviteLink = location.href
-    if (this.clipboard.copy(inviteLink)) {
+    const inviteLink = new URL('/room/invite/' + this.route.snapshot.paramMap.get('id'), location.origin)
+    if (this.clipboard.copy(inviteLink.toString())) {
       this.snackbar.open('Скопировано', undefined, {
         duration: 2000,
       });
