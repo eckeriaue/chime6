@@ -11,6 +11,6 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'rooms/:id',
-    renderMode: RenderMode.Server,
+    renderMode: RenderMode.Client,
   }
 ]

@@ -1,5 +1,4 @@
-import { Component, ChangeDetectionStrategy, runInInjectionContext, inject } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
 import {MatButtonModule} from '@angular/material/button'
 import {MatInputModule} from '@angular/material/input'
 import {MatFormFieldModule} from '@angular/material/form-field'
@@ -13,7 +12,14 @@ import { filter, first } from 'rxjs/operators'
 
 @Component({
   selector: 'app-create-room',
-  imports: [MatButtonModule, MatInputModule, MatFormFieldModule, MatChipsModule, MatSelectModule, ReactiveFormsModule],
+  imports: [
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatChipsModule,
+    MatSelectModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './create-room.html',
   styleUrl: './create-room.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -53,7 +59,7 @@ export class CreateRoom {
         filter(res => 'url' in res),
         first(),
       ).subscribe(res => {
-        this.router.navigate([res.url])
+        this.router.navigate([res.url], { queryParams: { myName: userName } })
       })
     }
   }

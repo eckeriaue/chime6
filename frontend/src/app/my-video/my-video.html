@@ -1,0 +1,8 @@
+@let loading = audioStream.isLoading() || videoStream.isLoading();
+
+<div class="bg-(--mat-sys-inverse-on-surface) border-2 border-(--mat-sys-inverse-on-surface) overflow-hidden flex border items-center justify-center w-[300px] h-[200px] rounded-3xl">
+  @if (loading) {
+    <mat-spinner></mat-spinner>
+  }
+  <video [hidden]="loading" #videoElement id="me" autoplay class="scale-[1.16] size-[inherit]"></video>
+</div>

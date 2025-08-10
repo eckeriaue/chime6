@@ -1,7 +1,18 @@
 
 
-<ul>
-  @for (user of users(); track user.name) {
-    <li>{{user.name}}</li>
-  }
-</ul>
+<div class="grid grid-cols-[minmax(10px,280px)_1fr]">
+  <ul class="bg-(--mat-sys-inverse-on-surface) min-h-dvh border-r border-(--mat-sys-inverse-surface) p-5">
+    @for (user of users(); track user.name) {
+      <li>{{user.name}}</li>
+    }
+  </ul>
+
+  <div class="px-5 py-2">
+
+    <nav class="flex justify-end">
+      <button matButton (click)="copyInviteLink()"> Invite </button>
+    </nav>
+
+    <app-my-video />
+  </div>
+</div>
