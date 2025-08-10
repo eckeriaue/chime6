@@ -13,5 +13,9 @@ export const routes: Routes = [
   {
     path: 'rooms/:id',
     loadComponent: () => import('./room/room').then(m => m.Room)
+  },
+  {
+    path: 'rooms/:id/invite',
+    loadComponent: () => import('./health-check/health-check').then(m => m.HealthCheck)
   }
 ]
