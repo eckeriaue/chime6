@@ -5,7 +5,7 @@
   <ul>
     @for(room of rooms.value(); track room.roomName) {
       <li>
-        <a [routerLink]="[generateRoomLink(room.uid)]">
+        <a [routerLink]="['/rooms', room.uid]">
           {{ room.roomName }}
         </a>
       </li>

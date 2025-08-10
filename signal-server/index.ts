@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.150.0/http/server.ts"
 import { Server } from "socket.io"
 
 const io = new Server()
@@ -13,6 +12,7 @@ io.on("connection", (socket) => {
   })
 })
 
-await serve(io.handler(), {
+
+Deno.serve({
   port: 3000,
-})
+}, io.adapter)

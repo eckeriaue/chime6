@@ -34,6 +34,16 @@ export class ApiService {
     })
   }
 
+  enterRoom(id: string, user: {name: string }) {
+    return fetch(`${this.roomsApi}${id}/enter`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: user.name, role: 'guest' })
+    }).then(r => r.json())
+  }
+
   getRoomUsers(id: string): Promise<
     {"roomName": string,"uid": string,"users": {name: string, role: string}[] }> {
     return fetch(`${this.roomsApi}${id}/users`, {

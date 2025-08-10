@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -120,6 +121,26 @@ func main() {
 		}
 	})
 
+	roomsApi.Post("/:id/enter", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		var room Room
+		var user User
+		json.Unmarshal(c.Body(), &user)
+		roomJsonString, err := redis.Get(c.Context(), id).Result()
+		if err != nil {
+			log.Printf("Redis get failed: %s", id)
+			return c.Status(400).JSON(fiber.Map{ "error": "Failed to get room" })
+		}
+
+		json.Unmarshal([]byte(roomJsonString), &room)
+		room.Users = append(room.Users, user)
+
+		resultRoomJson, _ := json.Marshal(room)
+		redis.Set(c.Context(), room.Uid, resultRoomJson, 1 * time.Hour)
+
+		return c.JSON(fiber.Map{ "ok": true })
+	})
+
 	log.Fatal(app.Listen(":" + os.Getenv("BACKEND_PORT")))
 
 }
@@ -134,7 +155,7 @@ func loadEnv() {
 
 func getRedis() *redis.Client {
 	var client * redis.Client = redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
+		Addr:     fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT")),
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,
 	})

@@ -51,6 +51,7 @@ export class CreateRoom {
   public submit() {
     if (this.createRoomForm.valid) {
       const { userName, roomName, uid } = this.createRoomForm.value
+      localStorage.setItem('user', JSON.stringify({ name: userName }))
       this.apiService.createRoom({
         users: [{ name: userName, role: 'owner' }],
         roomName,

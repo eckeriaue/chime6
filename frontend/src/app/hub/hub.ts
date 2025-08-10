@@ -31,8 +31,4 @@ export class Hub {
     loader: () => this.apiService.getRooms()
   })
 
-
-  generateRoomLink(roomUid: string): string {
-    return '/rooms/' + roomUid
-  }
 }

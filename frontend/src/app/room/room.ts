@@ -22,6 +22,8 @@ export class Room {
 
   private snackbar = inject(MatSnackBar)
 
+  private roomId = computed(() => this.route.snapshot.paramMap.get('id')!)
+
   room = resource({
     params: () => ({ id: this.route.snapshot.paramMap.get('id')! }),
     loader: ({ params }) => this.apiService.getRoom(params.id),
@@ -33,7 +35,7 @@ export class Room {
   })
 
   ngOnInit() {
-    console.info(this.users())
+    this.apiService.enterRoom(this.roomId(), { name: JSON.parse(localStorage.getItem('user')!).name }).then(console.info)
   }
 
   public async copyInviteLink() {
