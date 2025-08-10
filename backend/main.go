@@ -24,8 +24,6 @@ type Room struct {
 	Users []User `json:"users"`
 }
 
-var ctx = context.Background()
-
 func main() {
 
 	loadEnv()
@@ -57,11 +55,10 @@ func main() {
 		}
 
 
-		if result, err := redis.Set(ctx, room.Uid, parsed, 1 * time.Hour).Result(); err != nil {
+		if result, err := redis.Set(c.Context(), room.Uid, parsed, 1 * time.Hour).Result(); err != nil {
 			log.Printf("Redis save failed: %s", room.Uid)
 			return c.Status(400).JSON(fiber.Map{ "error": "Failed to create room" })
 		} else if result == "OK" {
-			c.Redirect("/rooms/" + room.Uid, 201)
 			return c.JSON(fiber.Map {
 				"room_id": room.Uid,
 				"url": "/rooms/" + room.Uid,
@@ -70,19 +67,57 @@ func main() {
 		return c.Status(400).JSON(fiber.Map{ "error": "Failed to create room" })
 	})
 
+	roomsApi.Get("/", func(c *fiber.Ctx) error {
+		if keys, err := redis.Keys(c.Context(), "*").Result(); err != nil {
+			log.Printf("Redis keys failed: %v", err)
+			return c.Status(400).JSON(fiber.Map{ "error": "Failed to get rooms" })
+		} else {
+			if len(keys) == 0 {
+				return c.Status(200).JSON([]Room{})
+			}
+			if values, err := redis.MGet(c.Context(), keys...).Result(); err != nil {
+				return c.Status(400).JSON(fiber.Map{ "error": "Failed to get rooms" })
+			} else {
+				var rooms []Room
+				for _, value := range values {
+					var room Room
+					if err := json.Unmarshal([]byte(value.(string)), &room); err != nil {
+						log.Printf("Failed to unmarshal room: %v", err)
+						continue
+					}
+					rooms = append(rooms, room)
+				}
+				return c.Status(200).JSON(rooms)
+			}
+		}
+	})
+
 	roomsApi.Get("/:id", func(c *fiber.Ctx) error {
 		id := c.Params("id")
 		if id == "" {
 			return c.Status(400).JSON(fiber.Map{"error": "Invalid room ID"})
 		}
 
-		if room, err := redis.Get(ctx, id).Result(); err != nil {
+		if room, err := redis.Get(c.Context(), id).Result(); err != nil {
 			log.Printf("Redis get failed: %s", id)
 			return c.Status(400).JSON(fiber.Map{ "error": "Failed to get room" })
 		} else {
 			return c.JSON(room)
 		}
+	})
 
+	roomsApi.Get("/:id/users", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		if id == "" {
+			return c.Status(400).JSON(fiber.Map{"error": "Invalid room ID"})
+		}
+
+		if users, err := redis.Get(c.Context(), id).Result(); err != nil {
+			log.Printf("Redis get failed: %s", id)
+			return c.Status(400).JSON(fiber.Map{ "error": "Failed to get users" })
+		} else {
+			return c.JSON(users)
+		}
 	})
 
 	log.Fatal(app.Listen(":" + os.Getenv("BACKEND_PORT")))
@@ -104,7 +139,7 @@ func getRedis() *redis.Client {
 		DB:       0,
 	})
 
-	if _, err := client.Ping(ctx).Result(); err != nil {
+	if _, err := client.Ping(context.Background()).Result(); err != nil {
         log.Fatalf("Redis connection failed: %v", err)
     }
     return client

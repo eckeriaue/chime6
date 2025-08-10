@@ -1,3 +1,15 @@
 <div class="size-full bg-(--mat-sys-background) px-4">
-<!-- {{rooms.value()}} -->
+  @if (rooms.isLoading()) {
+    Loading...
+  }  @else {
+  <ul>
+    @for(room of rooms.value(); track room.roomName) {
+      <li>
+        <a [routerLink]="[generateRoomLink(room.uid)]">
+          {{ room.roomName }}
+        </a>
+      </li>
+    }
+  </ul>
+  }
 </div>

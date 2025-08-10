@@ -22,4 +22,26 @@ export class ApiService {
       }
     }).then(r => r.json()).then(JSON.parse)
   }
+
+  getRooms(): Promise<
+    {"roomName": string,"uid": string,"users": {name: string, role: string}[] }[]> {
+    return fetch(`${this.roomsApi}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(r => {
+      return r.json()
+    })
+  }
+
+  getRoomUsers(id: string): Promise<
+    {"roomName": string,"uid": string,"users": {name: string, role: string}[] }> {
+    return fetch(`${this.roomsApi}${id}/users`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(r => {
+      return r.json()
+    })
+  }
 }
