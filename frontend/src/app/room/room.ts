@@ -27,6 +27,7 @@ export class Room {
 
   enableMicro = signal(false)
   enableVideo = signal(false)
+  private pcs = signal<RTCPeerConnection[]>([])
 
   constructor(
     private apiService: ApiService,
@@ -57,6 +58,9 @@ export class Room {
       first()
     ).subscribe(({ user, room }) => {
       this.room.set(room)
+      this.pcs.set(
+        this.room.value()!.users.map(() => new RTCPeerConnection())
+      )
       sessionStorage.setItem(room.uid, JSON.stringify({ user, room }))
     })
   }
