@@ -1,10 +1,18 @@
 
 <div class="grid grid-cols-[minmax(10px,280px)_1fr]">
-  <ul class="bg-(--mat-sys-inverse-on-surface) min-h-dvh border-r border-(--mat-sys-inverse-surface) p-5">
-    @for (user of users(); track user.name) {
-      <li>{{user.name}}</li>
+  <div class="flex flex-col bg-(--mat-sys-inverse-on-surface) min-h-dvh border-r border-(--mat-sys-inverse-surface) p-5">
+    <ul class="grow">
+      @for (user of users(); track user.name) {
+        <li>{{user.name}}</li>
+      }
+    </ul>
+
+    @if (currentUser()) {
+      <div>
+        <span> {{ currentUser() }} </span>
+      </div>
     }
-  </ul>
+  </div>
 
   <div class="px-5 py-2">
 

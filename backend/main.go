@@ -56,7 +56,6 @@ func main() {
 			return c.Status(400).JSON(fiber.Map{"error": "Failed to marshal room"})
 		}
 
-
 		if result, err := redis.Set(c.Context(), room.Uid, parsed, 1 * time.Hour).Result(); err != nil {
 			log.Printf("Redis save failed: %s", room.Uid)
 			return c.Status(400).JSON(fiber.Map{ "error": "Failed to create room" })

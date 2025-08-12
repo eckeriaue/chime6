@@ -8,7 +8,8 @@ import { MyVideo } from '../my-video/my-video'
 import { MatDialog } from '@angular/material/dialog'
 import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RoomPrepareDialog } from './room-prepare-dialog/room-prepare-dialog'
-import { first, filter, tap, switchMap, takeUntil, defer } from 'rxjs'
+import { first, filter, tap, iif, of, from, map, forkJoin, switchMap, takeUntil, defer } from 'rxjs'
+import { uid } from 'radashi'
 
 @Component({
   selector: 'app-room',
@@ -26,20 +27,30 @@ export class Room {
     private route: ActivatedRoute,
     private clipboard: Clipboard,
   ) {
-    const enterRoomSubscribe = toObservable(this.room.value).pipe(
+    toObservable(this.room.value).pipe(
       filter(room => room !== undefined),
-      switchMap(() => {
-        return this.dialog.open(RoomPrepareDialog, {
-          width: '500px',
-        }).afterClosed().pipe(first())
-      }),
-      switchMap(currentUser => {
-        return this.apiService.enterRoom(this.route.snapshot.paramMap.get('id')!, currentUser)
+      switchMap(room => iif(
+        () => !!sessionStorage.getItem(room.uid),
+        of(JSON.parse(sessionStorage.getItem(room.uid)!)),
+        defer(() => this.dialog.open(RoomPrepareDialog, {
+            width: '500px',
+        }).afterClosed().pipe(first(), map(user => ({ room, user }))))
+      )),
+      switchMap(({ user, room }) => {
+        if (room.users.some((u: { uid: string }) => u.uid === user.uid)) {
+          return of({ user, room })
+        } else {
+          return forkJoin({
+            user: of(user),
+            room: this.apiService.enterRoom(this.route.snapshot.paramMap.get('id')!, user)
+          })
+        }
       }),
       takeUntilDestroyed(),
-    ).subscribe(room => {
-      enterRoomSubscribe.unsubscribe()
+      first()
+    ).subscribe(({ user, room }) => {
       this.room.set(room)
+      sessionStorage.setItem(room.uid, JSON.stringify({ user, room }))
     })
   }
 

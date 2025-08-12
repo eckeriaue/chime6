@@ -55,6 +55,7 @@ export class CreateRoom {
       this.apiService.createRoom({
         owner: { name: userName, role: 'owner', uid: uid(8) },
         roomName,
+        users: [],
         uid: roomUid
       }).pipe(
         filter(res => 'url' in res),
