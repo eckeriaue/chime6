@@ -22,6 +22,7 @@ type User struct {
 type Room struct {
 	RoomName string `json:"roomName"`
 	Uid string `json:"uid"`
+	Owner User `json:"owner"`
 	Users []User `json:"users"`
 }
 

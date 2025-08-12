@@ -50,12 +50,12 @@ export class CreateRoom {
 
   public submit() {
     if (this.createRoomForm.valid) {
-      const { userName, roomName, uid } = this.createRoomForm.value
+      const { userName, roomName, uid: roomUid } = this.createRoomForm.value
       localStorage.setItem('user', JSON.stringify({ name: userName }))
       this.apiService.createRoom({
-        users: [{ name: userName, role: 'owner' }],
+        owner: { name: userName, role: 'owner', uid: uid(8) },
         roomName,
-        uid
+        uid: roomUid
       }).pipe(
         filter(res => 'url' in res),
         first(),

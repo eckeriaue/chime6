@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { env } from '../../environments/environment'
+import { uid } from 'radashi'
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class ApiService {
   }
 
   getRoom(id: string): Promise<
-    {"roomName": string,"uid": string,"users": {name: string, role: string}[] }> {
+    {"roomName": string,"uid": string,"users": {name: string, uid: string, role: string}[] }> {
     return fetch(`${this.roomsApi}${id}`, {
       headers: {
         'Content-Type': 'application/json'
@@ -24,7 +25,7 @@ export class ApiService {
   }
 
   getRooms(): Promise<
-    {"roomName": string,"uid": string,"users": {name: string, role: string}[] }[]> {
+    {"roomName": string,"uid": string,"users": {name: string, uid: string, role: string}[] }[]> {
     return fetch(`${this.roomsApi}`, {
       headers: {
         'Content-Type': 'application/json'
@@ -40,12 +41,12 @@ export class ApiService {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name: user.userName, role: 'guest' })
+      body: JSON.stringify({ uid: uid(8), name: user.userName, role: 'guest' })
     }).then(r => r.json())
   }
 
   getRoomUsers(id: string): Promise<
-    {"roomName": string,"uid": string,"users": {name: string, role: string}[] }> {
+    {"roomName": string,"uid": string,"users": {name: string, uid: string, role: string}[] }> {
     return fetch(`${this.roomsApi}${id}/users`, {
       headers: {
         'Content-Type': 'application/json'

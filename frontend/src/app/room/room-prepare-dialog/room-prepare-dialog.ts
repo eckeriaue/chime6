@@ -37,7 +37,7 @@ import {
         <p>Введите ваше имя</p>
         <mat-form-field class="w-full">
           <mat-label>Имя</mat-label>
-          <input matInput name="userName" formControlName="userName" required />
+          <input matInput name="userName" cdkFocusInitial formControlName="userName" required />
         </mat-form-field>
       </form>
     </mat-dialog-content>
