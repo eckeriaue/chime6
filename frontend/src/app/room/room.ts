@@ -8,9 +8,10 @@ import { MyVideo } from '../my-video/my-video'
 import { MatDialog } from '@angular/material/dialog'
 import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RoomPrepareDialog } from './room-prepare-dialog/room-prepare-dialog'
-import { first, filter, iif, of, map, forkJoin, switchMap, defer } from 'rxjs'
+import { first, filter, iif, from, distinct, of, tap, map, forkJoin, switchMap, defer, scan } from 'rxjs'
 import { MatIconModule } from '@angular/material/icon'
-import { Socket } from 'phoenix'
+import { Channel, Socket } from 'phoenix'
+import { channel } from 'node:process'
 
 @Component({
   selector: 'app-room',
@@ -27,7 +28,22 @@ export class Room {
 
   enableMicro = signal(false)
   enableVideo = signal(false)
-  private pcs = signal<RTCPeerConnection[]>([])
+  private pcs = signal<{pc: RTCPeerConnection, user: { name: string, uid: string }}[]>([])
+  private remoteVideos = signal<MediaStreamTrack[]>([])
+  private channel: Channel | null = null
+
+  private pc$ = toObservable(this.pcs).pipe(
+    switchMap(pcs => from(pcs)),
+    distinct(),
+    tap(async ({ pc, user }) => {
+      const offer = await pc.createOffer()
+      pc.setLocalDescription(offer)
+      this.channel!.push('offer', { type: offer.type, sdp: offer.sdp, to: user.uid })
+    })
+  ).subscribe(pc => {
+
+    // console.info(pc)
+  })
 
   constructor(
     private apiService: ApiService,
@@ -36,10 +52,11 @@ export class Room {
   ) {
     const roomId = this.route.snapshot.paramMap.get('id')!
     this.socket.connect()
-    const channel = this.socket.channel("room:" + roomId, {})
-    channel.join()
+    this.channel = this.socket.channel("room:" + roomId, {})
+    this.channel.join()
       .receive("ok", resp => { console.log("Joined successfully", resp) })
 
+    this.channel.on("offer", console.info)
 
     toObservable(this.room.value).pipe(
       filter(room => room !== undefined),
@@ -59,7 +76,7 @@ export class Room {
     ).subscribe(({ user, room }) => {
       this.room.set(room)
       this.pcs.set(
-        this.room.value()!.users.map(() => new RTCPeerConnection())
+        this.room.value()!.users.map((user) => ({ pc: new RTCPeerConnection(), user }))
       )
       sessionStorage.setItem(room.uid, JSON.stringify({ user, room }))
     })

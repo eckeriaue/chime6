@@ -6,8 +6,8 @@ defmodule SignalServerWeb.RoomChannel do
     {:ok, assign(socket, :room_id, room_id)}
   end
 
-  def handle_in("offer", %{"sdp" => sdp, "to" => _to}, socket) do
-    broadcast!(socket, "offer", %{"sdp" => sdp, "from" => socket.assigns.room_id})
+  def handle_in("offer", %{"type" => _type, "sdp" => sdp, "to" => to}, socket) do
+    broadcast!(socket, "offer", %{"sdp" => sdp, "from" => socket.assigns.room_id, "to" => to})
     {:reply, :ok, socket}
   end
 
