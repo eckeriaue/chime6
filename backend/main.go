@@ -138,7 +138,7 @@ func main() {
 		resultRoomJson, _ := json.Marshal(room)
 		redis.Set(c.Context(), room.Uid, resultRoomJson, 1 * time.Hour)
 
-		return c.JSON(fiber.Map{ "ok": true })
+		return c.JSON(room)
 	})
 
 	log.Fatal(app.Listen(":" + os.Getenv("BACKEND_PORT")))

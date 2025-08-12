@@ -34,13 +34,13 @@ export class ApiService {
     })
   }
 
-  enterRoom(id: string, user: {name: string }) {
+  enterRoom(id: string, user: { userName: string }) {
     return fetch(`${this.roomsApi}${id}/enter`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name: user.name, role: 'guest' })
+      body: JSON.stringify({ name: user.userName, role: 'guest' })
     }).then(r => r.json())
   }
 
