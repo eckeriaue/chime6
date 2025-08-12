@@ -10,6 +10,7 @@ import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RoomPrepareDialog } from './room-prepare-dialog/room-prepare-dialog'
 import { first, filter, iif, of, map, forkJoin, switchMap, defer } from 'rxjs'
 import { MatIconModule } from '@angular/material/icon'
+import { Socket } from 'phoenix'
 
 @Component({
   selector: 'app-room',
