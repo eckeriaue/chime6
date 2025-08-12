@@ -51,6 +51,7 @@ export class RoomPrepareDialog {
 
   prepareForm = new FormGroup({
     userName: new FormControl('', [Validators.required]),
+    uid: new FormControl(uid(8), [Validators.required]),
   })
 
   readonly dialogRef = inject(MatDialogRef<RoomPrepareDialog>)

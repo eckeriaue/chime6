@@ -17,6 +17,7 @@ import (
 type User struct {
 	Name string `json:"name"`
 	Role string `json:"role"` // "owner", "guest"
+	Uid string `json:"uid"`
 }
 
 type Room struct {
@@ -24,6 +25,15 @@ type Room struct {
 	Uid string `json:"uid"`
 	Owner User `json:"owner"`
 	Users []User `json:"users"`
+}
+
+func (r *Room) HasUser(targetUser User) bool {
+    for _, user := range r.Users {
+        if user.Uid == targetUser.Uid {
+            return true
+        }
+    }
+    return false
 }
 
 func main() {
@@ -133,7 +143,9 @@ func main() {
 		}
 
 		json.Unmarshal([]byte(roomJsonString), &room)
-		room.Users = append(room.Users, user)
+		if (!room.HasUser(user)) {
+			room.Users = append(room.Users, user)
+		}
 
 		resultRoomJson, _ := json.Marshal(room)
 		redis.Set(c.Context(), room.Uid, resultRoomJson, 1 * time.Hour)

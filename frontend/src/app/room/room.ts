@@ -39,16 +39,10 @@ export class Room {
             width: '500px',
         }).afterClosed().pipe(first(), map(user => ({ room, user }))))
       )),
-      switchMap(({ user, room }) => {
-        if (room.users.some((u: { uid: string }) => u.uid === user.uid)) {
-          return of({ user, room })
-        } else {
-          return forkJoin({
-            user: of(user),
-            room: this.apiService.enterRoom(this.route.snapshot.paramMap.get('id')!, user)
-          })
-        }
-      }),
+      switchMap(({ user }) => forkJoin({
+        user: of(user),
+        room: this.apiService.enterRoom(this.route.snapshot.paramMap.get('id')!, user)
+      })),
       takeUntilDestroyed(),
       first()
     ).subscribe(({ user, room }) => {
