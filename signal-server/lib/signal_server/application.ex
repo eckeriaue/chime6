@@ -9,7 +9,6 @@ defmodule SignalServer.Application do
   def start(_type, _args) do
     children = [
       SignalServerWeb.Telemetry,
-      SignalServer.Repo,
       {DNSCluster, query: Application.get_env(:signal_server, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: SignalServer.PubSub},
       # Start a worker by calling: SignalServer.Worker.start_link(arg)

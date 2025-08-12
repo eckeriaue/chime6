@@ -1,15 +1,5 @@
 import Config
 
-# Configure your database
-config :signal_server, SignalServer.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "signal_server_dev",
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
-
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
@@ -23,7 +13,7 @@ config :signal_server, SignalServerWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "Bnjm6Cg5Mi/8dhYbrlVM1XNvlw8940uMdjzzo0dCgAO/VnCjusLjtNSQVe7wtmWY",
+  secret_key_base: "nR33RacbGY9iQVwmUKv0rKqb6scqtYrkDIvcuP9trF5GrQWviUEXv7ivKCkZKsD1",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:signal_server, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:signal_server, ~w(--watch)]}

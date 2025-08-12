@@ -8,7 +8,6 @@
 import Config
 
 config :signal_server,
-  ecto_repos: [SignalServer.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
@@ -20,7 +19,7 @@ config :signal_server, SignalServerWeb.Endpoint,
     layout: false
   ],
   pubsub_server: SignalServer.PubSub,
-  live_view: [signing_salt: "b8iJcvai"]
+  live_view: [signing_salt: "txMknlDb"]
 
 # Configures the mailer
 #

@@ -7,7 +7,7 @@ defmodule SignalServerWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_signal_server_key",
-    signing_salt: "Ow6i9sbb",
+    signing_salt: "FJXqiJav",
     same_site: "Lax"
   ]
 
@@ -32,7 +32,6 @@ defmodule SignalServerWeb.Endpoint do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
-    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :signal_server
   end
 
   plug Phoenix.LiveDashboard.RequestLogger,
