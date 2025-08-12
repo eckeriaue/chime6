@@ -8,12 +8,12 @@ import { MyVideo } from '../my-video/my-video'
 import { MatDialog } from '@angular/material/dialog'
 import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RoomPrepareDialog } from './room-prepare-dialog/room-prepare-dialog'
-import { first, filter, tap, iif, of, from, map, forkJoin, switchMap, takeUntil, defer } from 'rxjs'
-import { uid } from 'radashi'
+import { first, filter, iif, of, map, forkJoin, switchMap, defer } from 'rxjs'
+import { MatIconModule } from '@angular/material/icon'
 
 @Component({
   selector: 'app-room',
-  imports: [MatButtonModule, MyVideo],
+  imports: [MatButtonModule, MyVideo, MatIconModule],
   templateUrl: './room.html',
   styleUrl: './room.css'
 })
@@ -21,6 +21,9 @@ export class Room {
 
 
   dialog = inject(MatDialog)
+
+  enableMicro = signal(false)
+  enableVideo = signal(false)
 
   constructor(
     private apiService: ApiService,

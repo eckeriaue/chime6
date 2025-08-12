@@ -1,5 +1,6 @@
-import { Component, effect, ElementRef, resource, ViewChild } from '@angular/core'
+import { Component, effect, ElementRef, input, resource, ViewChild } from '@angular/core'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { toObservable } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'app-my-video',
@@ -11,20 +12,32 @@ export class MyVideo {
 
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>
 
+  audio = input(false)
+  video = input(false)
+
   videoStream = resource({
-      loader: () => navigator.mediaDevices.getUserMedia({ video: true })
+    params: () => ({
+      enabled: this.video()
+    }),
+    loader: ({ params }) => params.enabled ? navigator.mediaDevices.getUserMedia({ video: true }) : Promise.resolve(null)
   })
 
   audioStream = resource({
-      loader: () => navigator.mediaDevices.getUserMedia({ audio: true })
+    params: () => ({
+      enabled: this.audio()
+    }),
+    loader: ({ params }) => params.enabled ? navigator.mediaDevices.getUserMedia({ audio: true }) : Promise.resolve(null)
   })
 
 
   constructor() {
+    toObservable(this.videoStream.value).pipe(
 
-    const effectRef = effect(() => {
-      if (this.videoStream.hasValue() && this.videoElement) {
-        this.videoElement.nativeElement.srcObject = this.videoStream.value()
+    ).subscribe(stream => {
+      if (this.videoElement && this.videoElement.nativeElement && stream) {
+        this.videoElement.nativeElement.srcObject = stream
+      } else if (this.videoElement && this.videoElement.nativeElement && stream === null) {
+        this.videoElement.nativeElement.srcObject = null
       }
     })
   }

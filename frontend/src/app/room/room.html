@@ -6,6 +6,25 @@
         <li>{{user.name}}</li>
       }
     </ul>
+
+
+    <div>
+      <button matIconButton="outlined" (click)="enableMicro.set(!enableMicro())">
+        @if (enableMicro()) {
+          <mat-icon>mic</mat-icon>
+        } @else {
+          <mat-icon>mic_off</mat-icon>
+        }
+      </button>
+
+      <button matIconButton (click)="enableVideo.set(!enableVideo())">
+        @if (enableVideo()) {
+          <mat-icon>videocam</mat-icon>
+        } @else {
+          <mat-icon>videocam_off</mat-icon>
+        }
+      </button>
+    </div>
   </div>
 
   <div class="px-5 py-2">
@@ -14,6 +33,6 @@
       <button matButton (click)="copyInviteLink()"> Invite </button>
     </nav>
 
-    <app-my-video />
+    <app-my-video [audio]="enableMicro()" [video]="enableVideo()" />
   </div>
 </div>
