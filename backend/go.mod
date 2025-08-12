@@ -1,4 +1,4 @@
-module chime6
+module glashatai
 
 go 1.24.5
 
