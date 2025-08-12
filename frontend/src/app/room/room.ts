@@ -27,7 +27,6 @@ export class Room {
   room = resource({
     params: () => ({ id: this.route.snapshot.paramMap.get('id')! }),
     loader: ({ params }) => this.apiService.getRoom(params.id),
-
   })
 
   users = computed(() => {
@@ -35,6 +34,7 @@ export class Room {
   })
 
   ngOnInit() {
+
     this.apiService.enterRoom(this.roomId(), { name: JSON.parse(localStorage.getItem('user')!).name }).then(console.info)
   }
 
