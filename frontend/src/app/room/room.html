@@ -9,7 +9,7 @@
 
 
     <div class="border-t border-(--mat-sys-inverse-surface) p-5">
-      <button matIconButton="outlined" (click)="enableMicro.set(!enableMicro())">
+      <button matIconButton (click)="enableMicro.set(!enableMicro())">
         @if (enableMicro()) {
           <mat-icon>mic</mat-icon>
         } @else {

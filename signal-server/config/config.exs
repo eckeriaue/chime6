@@ -7,7 +7,8 @@
 # General application configuration
 import Config
 
-config :signal_server,
+config :signal_server, WebrtcServerWeb.Endpoint,
+  allowed_origins: ["*"],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint

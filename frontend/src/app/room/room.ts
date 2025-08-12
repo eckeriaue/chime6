@@ -21,6 +21,8 @@ import { Socket } from 'phoenix'
 export class Room {
 
 
+  socket = new Socket('ws://localhost:4000/socket')
+
   dialog = inject(MatDialog)
 
   enableMicro = signal(false)
@@ -31,6 +33,13 @@ export class Room {
     private route: ActivatedRoute,
     private clipboard: Clipboard,
   ) {
+    const roomId = this.route.snapshot.paramMap.get('id')!
+    this.socket.connect()
+    const channel = this.socket.channel("room:" + roomId, {})
+    channel.join()
+      .receive("ok", resp => { console.log("Joined successfully", resp) })
+
+
     toObservable(this.room.value).pipe(
       filter(room => room !== undefined),
       switchMap(room => iif(
